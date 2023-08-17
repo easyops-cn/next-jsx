@@ -20,7 +20,6 @@ const RESERVED_PROP_KEYS = new Set([
 ]);
 
 const NodeType = Symbol("NodeType");
-const Slot = Symbol("Slot");
 const PropNamespace = "prop:";
 const ConfNamespace = "conf:";
 
@@ -68,7 +67,7 @@ export function jsx(type, config) {
         ...restConfig,
         dataSource: value,
         brick: type === ForEach ? ":forEach" : type === If ? ":if" : ":switch",
-        children: fixBrickChildren(config.children),
+        slots: childrenToSlots(fixBrickChildren(config.children)),
       };
     }
 
@@ -121,7 +120,7 @@ export function jsx(type, config) {
     brick: typeof type === "string" ? type.replaceAll("_", ".") : type,
     properties,
     slots,
-    [Slot]: slot,
+    slot,
     ...reservedConfig,
   };
 }
@@ -145,13 +144,16 @@ function fixBrickChildren(children) {
 function childrenToSlots(children) {
   const slots = {};
   for (const child of children) {
-    const slot = child[Slot] ?? "";
+    const slot = child.slot ?? "";
+    delete child.slot;
     const type = child[NodeType] === "route" ? "routes" : "bricks";
-    const slotConf = (slots[slot] ??= {
-      type,
-      [type]: [],
-    });
-    slotConf[type].push(child);
+    if (!Object.prototype.hasOwnProperty.call(slots, slot)) {
+      slots[slot] = {
+        type,
+        [type]: [],
+      };
+    }
+    slots[slot][type].push(child);
   }
   return slots;
 }
