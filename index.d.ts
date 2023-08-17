@@ -1,6 +1,8 @@
 import { ContextConf, CustomTemplateProxy } from "@next-core/types";
 
-export const Fragment: symbol;
+export function Fragment(props: {
+  slot: string;
+}): any;
 
 /**
  * 路由

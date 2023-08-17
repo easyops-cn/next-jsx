@@ -25,8 +25,10 @@ const ConfNamespace = "conf:";
 
 export function jsx(type, config) {
   switch (type) {
-    case Fragment:
-      return fixBrickChildren(config.children);
+    case Fragment: {
+      const { slot, children } = config;
+      return fixBrickChildren(children, slot);
+    }
 
     case Route: {
       let route;
@@ -125,20 +127,25 @@ export function jsx(type, config) {
   };
 }
 
-function fixBrickChildren(children) {
+function fixBrickChildren(children, slot) {
   return []
     .concat(children ?? [])
     .flat(Infinity)
-    .map((child) =>
-      typeof child === "string"
-        ? {
-            brick: "span",
-            properties: {
-              textContent: child,
-            },
-          }
-        : child
-    );
+    .map((child) => {
+      const fixedChild =
+        typeof child === "string"
+          ? {
+              brick: "span",
+              properties: {
+                textContent: child,
+              },
+            }
+          : child;
+      if (slot != null) {
+        fixedChild.slot = slot;
+      }
+      return fixedChild;
+    });
 }
 
 function childrenToSlots(children) {
