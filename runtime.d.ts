@@ -87,6 +87,9 @@ export const INSTALLED_APPS: Readonly<{
 /** 用于 `ForEach` 子节点中获取对应的数据项 */
 export const ITEM: any;
 
+/** 用于 `ForEach` 子节点中获取对应的数据项的索引，从 `0` 开始计数 */
+export const INDEX: number;
+
 /** 本地存储（JSON） */
 export const LOCAL_STORAGE: Readonly<{
   /** 获取本地存储的指定数据（JSON） */
